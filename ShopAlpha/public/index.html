@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopAlpha — E-Commerce Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #faf9f6;
+  --surface: #ffffff;
+  --border: #e8e3da;
+  --text: #1a1612;
+  --muted: #8b7e6f;
+  --accent: #c84b31;
+  --accent-light: #fef2ee;
+  --success: #166534;
+  --success-bg: #dcfce7;
+}
+
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ---- NAV ---- */
+nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); cursor: pointer; }
+.logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 8px; align-items: center; }
+.nav-btn { background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); padding: 8px 16px; border-radius: 8px; transition: all 0.2s; }
+.nav-btn:hover { background: var(--bg); color: var(--text); }
+.cart-btn { background: var(--text); color: #fff; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; padding: 10px 20px; border-radius: 100px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+.cart-btn:hover { background: var(--accent); }
+.cart-count { background: var(--accent); color: #fff; width: 20px; height: 20px; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+
+/* ---- USER BAR ---- */
+.user-bar {
+  background: var(--accent-light);
+  padding: 10px 40px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  border-bottom: 1px solid #f5cfc8;
+}
+.user-bar span { color: var(--accent); font-weight: 600; }
+.user-bar-actions { display: flex; gap: 12px; }
+.user-bar button { background: none; border: none; color: var(--accent); font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+/* ---- VIEWS ---- */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ---- HERO ---- */
+.hero {
+  background: var(--text);
+  color: #fff;
+  padding: 72px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+.hero-text { max-width: 560px; }
+.hero-tag { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+.hero h1 { font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p { font-size: 16px; color: #a09080; line-height: 1.6; margin-bottom: 32px; }
+.hero-cta { background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; padding: 16px 32px; border-radius: 100px; transition: opacity 0.2s; }
+.hero-cta:hover { opacity: 0.85; }
+.hero-emoji { font-size: 120px; line-height: 1; }
+
+/* ---- SHOP ---- */
+.shop-container { max-width: 1200px; margin: 0 auto; padding: 40px; }
+.shop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+.shop-header h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-btn { background: var(--surface); border: 1px solid var(--border); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 18px; border-radius: 100px; transition: all 0.2s; }
+.filter-btn:hover { border-color: var(--text); }
+.filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+.product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+.product-img { background: var(--bg); height: 160px; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+.product-info { padding: 16px; }
+.product-category { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.product-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.product-price { font-size: 17px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+.product-price .original { font-size: 13px; font-weight: 400; color: var(--muted); text-decoration: line-through; margin-left: 6px; }
+.add-btn { width: 100%; background: var(--text); color: #fff; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; padding: 10px; border-radius: 10px; transition: background 0.2s; }
+.add-btn:hover { background: var(--accent); }
+.add-btn.added { background: var(--success); }
+
+/* ---- PRODUCT DETAIL ---- */
+.detail-container { max-width: 900px; margin: 0 auto; padding: 40px; display: flex; gap: 48px; align-items: flex-start; }
+.back-link { font-size: 13px; color: var(--muted); cursor: pointer; margin-bottom: 20px; transition: color 0.2s; }
+.back-link:hover { color: var(--text); }
+.detail-img { background: var(--bg); border-radius: 20px; width: 320px; height: 320px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 120px; border: 1px solid var(--border); }
+.detail-info { flex: 1; }
+.detail-category { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.detail-name { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+.stars { color: #f59e0b; margin-bottom: 12px; }
+.detail-price { font-size: 28px; font-weight: 800; color: var(--accent); margin-bottom: 16px; }
+.detail-desc { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+.qty-row { display: flex; align-items: center; gap: 16px; }
+.qty-ctrl { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.qty-ctrl button { background: var(--bg); border: none; width: 44px; height: 44px; font-size: 20px; cursor: pointer; transition: background 0.2s; }
+.qty-ctrl button:hover { background: var(--border); }
+.qty-ctrl span { width: 44px; text-align: center; font-weight: 700; font-size: 16px; }
+.big-add-btn { flex: 1; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; padding: 14px 24px; border-radius: 12px; transition: opacity 0.2s; }
+.big-add-btn:hover { opacity: 0.85; }
+
+/* ---- CART ---- */
+.cart-container { max-width: 640px; margin: 0 auto; padding: 40px; }
+.cart-container h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 24px; }
+.cart-empty { text-align: center; padding: 60px 20px; }
+.cart-empty .empty-icon { font-size: 64px; margin-bottom: 16px; }
+.cart-empty p { font-size: 16px; margin-bottom: 24px; color: var(--muted); }
+.back-shop { background: var(--text); color: #fff; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 100px; transition: background 0.2s; }
+.back-shop:hover { background: var(--accent); }
+.cart-item { display: flex; align-items: center; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.cart-item-icon { font-size: 40px; width: 60px; text-align: center; }
+.cart-item-info { flex: 1; }
+.cart-item-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.cart-item-price { font-size: 13px; color: var(--muted); }
+.cart-item-qty { display: flex; align-items: center; gap: 8px; }
+.cart-item-qty button { background: var(--bg); border: 1px solid var(--border); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+.cart-item-qty button:hover { background: var(--border); }
+.remove-item { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; padding: 4px; transition: color 0.2s; }
+.remove-item:hover { color: var(--accent); }
+.cart-total-box { background: var(--text); color: #fff; border-radius: 16px; padding: 24px; margin-top: 20px; }
+.total-row { display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 10px; opacity: 0.7; }
+.total-row.grand { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; opacity: 1; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 16px; margin-top: 8px; }
+.checkout-btn { width: 100%; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; padding: 16px; border-radius: 12px; margin-top: 20px; transition: opacity 0.2s; }
+.checkout-btn:hover { opacity: 0.85; }
+
+/* ---- AUTH ---- */
+.auth-container { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 40px; }
+.auth-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; }
+.auth-box h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+.auth-box p { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.form-group input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; background: var(--bg); transition: border-color 0.2s; }
+.form-group input:focus { outline: none; border-color: var(--text); }
+.auth-submit { width: 100%; background: var(--text); color: #fff; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; padding: 14px; border-radius: 12px; margin-top: 8px; transition: background 0.2s; }
+.auth-submit:hover { background: var(--accent); }
+.auth-switch { text-align: center; margin-top: 20px; font-size: 13px; color: var(--muted); }
+.auth-switch span { color: var(--accent); font-weight: 600; cursor: pointer; }
+.msg { padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 16px; }
+.msg.error { background: #fee2e2; color: #991b1b; }
+.msg.success { background: var(--success-bg); color: var(--success); }
+
+/* ---- ORDER SUCCESS ---- */
+.order-success { max-width: 480px; margin: 80px auto; text-align: center; padding: 40px; }
+.order-success .icon { font-size: 80px; margin-bottom: 24px; }
+.order-success h2 { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+.order-success p { color: var(--muted); font-size: 16px; margin-bottom: 12px; }
+.order-success .order-num { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 32px; }
+.order-success .back-shop { margin: 0 auto; display: block; }
+
+/* ---- ORDERS ---- */
+.orders-container { max-width: 700px; margin: 0 auto; padding: 40px; }
+.orders-container h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 24px; }
+.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+.order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.order-id { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; }
+.order-date { font-size: 12px; color: var(--muted); }
+.order-status { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 100px; background: var(--success-bg); color: var(--success); }
+.order-items-list { font-size: 14px; color: var(--muted); margin-bottom: 12px; line-height: 1.8; }
+.order-total-line { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: var(--accent); }
+.orders-empty { text-align: center; padding: 60px 0; color: var(--muted); }
+
+/* ---- TOAST ---- */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: #fff; padding: 12px 24px; border-radius: 100px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s; z-index: 1000; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---- LOADER ---- */
+.loader { text-align: center; padding: 60px; color: var(--muted); font-size: 14px; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .hero { padding: 48px 20px; flex-direction: column; text-align: center; }
+  .hero h1 { font-size: 36px; }
+  .hero-emoji { font-size: 72px; }
+  .shop-container, .cart-container, .orders-container { padding: 24px 20px; }
+  .detail-container { flex-direction: column; padding: 24px 20px; }
+  .detail-img { width: 100%; height: 220px; }
+  .user-bar { padding: 10px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo" onclick="showView('shop')">Shop<span>Alpha</span></div>
+  <div class="nav-links">
+    <button class="nav-btn" onclick="showView('shop')">Shop</button>
+    <button class="nav-btn" id="ordersNavBtn" onclick="showView('orders')" style="display:none">My Orders</button>
+    <button class="nav-btn" id="authNavBtn" onclick="showView('auth')">Sign In</button>
+    <button class="cart-btn" onclick="showView('cart')">
+      🛒 Cart <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- USER BAR -->
+<div class="user-bar" id="userBar">
+  <div>Welcome back, <span id="userName"></span> 👋</div>
+  <div class="user-bar-actions">
+    <button onclick="showView('orders')">My Orders</button>
+    <button onclick="logoutUser()">Sign Out</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SHOP VIEW -->
+<div id="shopView" class="view active">
+  <div class="hero">
+    <div class="hero-text">
+      <div class="hero-tag">New Arrivals 2025</div>
+      <h1>Shop <em>Smart.</em><br>Live Better.</h1>
+      <p>Premium products across electronics, fashion, sports and home — all in one place. Free shipping on orders over R1,000.</p>
+      <button class="hero-cta" onclick="document.getElementById('productsSection').scrollIntoView({behavior:'smooth'})">Browse Products →</button>
+    </div>
+    <div class="hero-emoji">🛍️</div>
+  </div>
+  <div class="shop-container" id="productsSection">
+    <div class="shop-header">
+      <h2>All Products</h2>
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
+        <button class="filter-btn" onclick="filterProducts('Electronics', this)">Electronics</button>
+        <button class="filter-btn" onclick="filterProducts('Clothing', this)">Clothing</button>
+        <button class="filter-btn" onclick="filterProducts('Sports', this)">Sports</button>
+        <button class="filter-btn" onclick="filterProducts('Home', this)">Home</button>
+      </div>
+    </div>
+    <div class="products-grid" id="productsGrid">
+      <div class="loader">Loading products…</div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div id="detailView" class="view">
+  <div class="detail-container">
+    <div class="detail-img" id="detailIcon"></div>
+    <div class="detail-info">
+      <div class="back-link" onclick="showView('shop')">← Back to Shop</div>
+      <div class="detail-category" id="detailCat"></div>
+      <div class="detail-name" id="detailName"></div>
+      <div class="stars">★★★★☆</div>
+      <div class="detail-price" id="detailPrice"></div>
+      <div class="detail-desc" id="detailDesc"></div>
+      <div class="qty-row">
+        <div class="qty-ctrl">
+          <button onclick="changeQty(-1)">−</button>
+          <span id="detailQty">1</span>
+          <button onclick="changeQty(1)">+</button>
+        </div>
+        <button class="big-add-btn" onclick="addDetailToCart()">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CART VIEW -->
+<div id="cartView" class="view">
+  <div class="cart-container">
+    <h2>Your Cart</h2>
+    <div id="cartContent"><div class="loader">Loading…</div></div>
+  </div>
+</div>
+
+<!-- AUTH VIEW -->
+<div id="authView" class="view">
+  <div class="auth-container">
+    <div class="auth-box">
+      <h2 id="authTitle">Sign In</h2>
+      <p id="authSubtitle">Welcome back to ShopAlpha</p>
+      <div id="authMsg"></div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="authEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group" id="nameGroup" style="display:none">
+        <label>Full Name</label>
+        <input type="text" id="authName" placeholder="Your full name">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="authPass" placeholder="••••••••">
+      </div>
+      <button class="auth-submit" onclick="handleAuth()" id="authSubmit">Sign In</button>
+      <div class="auth-switch">
+        <span id="authToggle" onclick="toggleAuthMode()">Don't have an account? Register</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER SUCCESS -->
+<div id="successView" class="view">
+  <div class="order-success">
+    <div class="icon">🎉</div>
+    <h2>Order Placed!</h2>
+    <p>Thanks for shopping with ShopAlpha. Your order is being processed.</p>
+    <div class="order-num" id="successOrderNum"></div>
+    <button class="back-shop" onclick="showView('shop')">Continue Shopping</button>
+  </div>
+</div>
+
+<!-- ORDERS VIEW -->
+<div id="ordersView" class="view">
+  <div class="orders-container">
+    <h2>My Orders</h2>
+    <div id="ordersContent"><div class="loader">Loading orders…</div></div>
+  </div>
+</div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let currentUser = null;
+let allProducts = [];
+let currentFilter = 'all';
+let currentProduct = null;
+let detailQty = 1;
+let isLogin = true;
+let cartCount = 0;
+
+// ── API Helper ───────────────────────────────────────────────────────────────
+async function api(method, url, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── Views ────────────────────────────────────────────────────────────────────
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  const map = { shop: 'shopView', detail: 'detailView', cart: 'cartView', auth: 'authView', success: 'successView', orders: 'ordersView' };
+  document.getElementById(map[v]).classList.add('active');
+  if (v === 'cart') loadCart();
+  if (v === 'shop') renderProducts();
+  if (v === 'orders') loadOrders();
+  window.scrollTo({ top: 0 });
+}
+
+// ── User bar ─────────────────────────────────────────────────────────────────
+function updateUserBar() {
+  const bar = document.getElementById('userBar');
+  const authBtn = document.getElementById('authNavBtn');
+  const ordersBtn = document.getElementById('ordersNavBtn');
+  if (currentUser) {
+    bar.style.display = 'flex';
+    document.getElementById('userName').textContent = currentUser.name;
+    authBtn.style.display = 'none';
+    ordersBtn.style.display = 'inline-block';
+  } else {
+    bar.style.display = 'none';
+    authBtn.style.display = 'inline-block';
+    ordersBtn.style.display = 'none';
+  }
+}
+
+// ── Products ─────────────────────────────────────────────────────────────────
+async function loadProducts() {
+  try {
+    const data = await api('GET', '/api/products');
+    allProducts = data.products;
+    renderProducts();
+  } catch (e) {
+    document.getElementById('productsGrid').innerHTML = '<div class="loader">Failed to load products.</div>';
+  }
+}
+
+function filterProducts(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts();
+}
+
+function renderProducts() {
+  const filtered = currentFilter === 'all' ? allProducts : allProducts.filter(p => p.category === currentFilter);
+  const grid = document.getElementById('productsGrid');
+  if (!filtered.length) { grid.innerHTML = '<div class="loader">No products found.</div>'; return; }
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card" onclick="showDetail(${p.id})">
+      <div class="product-img">${p.emoji}</div>
+      <div class="product-info">
+        <div class="product-category">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">R${p.price.toLocaleString()}${p.original_price ? `<span class="original">R${p.original_price.toLocaleString()}</span>` : ''}</div>
+        <button class="add-btn" onclick="event.stopPropagation(); addToCart(${p.id}, '${p.emoji}', '${p.name}')">Add to Cart</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showDetail(id) {
+  currentProduct = allProducts.find(p => p.id === id);
+  if (!currentProduct) return;
+  detailQty = 1;
+  document.getElementById('detailIcon').textContent = currentProduct.emoji;
+  document.getElementById('detailCat').textContent = currentProduct.category;
+  document.getElementById('detailName').textContent = currentProduct.name;
+  document.getElementById('detailPrice').textContent = `R${currentProduct.price.toLocaleString()}`;
+  document.getElementById('detailDesc').textContent = currentProduct.description;
+  document.getElementById('detailQty').textContent = detailQty;
+  showView('detail');
+}
+
+function changeQty(delta) {
+  detailQty = Math.max(1, detailQty + delta);
+  document.getElementById('detailQty').textContent = detailQty;
+}
+
+async function addDetailToCart() {
+  await addToCart(currentProduct.id, currentProduct.emoji, currentProduct.name, detailQty);
+}
+
+async function addToCart(productId, emoji, name, qty = 1) {
+  if (!currentUser) {
+    toast('Please sign in to add items to cart');
+    showView('auth');
+    return;
+  }
+  try {
+    await api('POST', '/api/cart', { product_id: productId, quantity: qty });
+    toast(`${emoji} ${name} added to cart`);
+    await refreshCartCount();
+  } catch (e) {
+    toast(e.message);
+  }
+}
+
+// ── Cart ─────────────────────────────────────────────────────────────────────
+async function refreshCartCount() {
+  if (!currentUser) { cartCount = 0; document.getElementById('cartCount').textContent = 0; return; }
+  try {
+    const data = await api('GET', '/api/cart');
+    cartCount = data.items.reduce((s, i) => s + i.quantity, 0);
+    document.getElementById('cartCount').textContent = cartCount;
+  } catch {}
+}
+
+async function loadCart() {
+  const div = document.getElementById('cartContent');
+  if (!currentUser) {
+    div.innerHTML = `<div class="cart-empty">
+      <div class="empty-icon">🔐</div>
+      <p>Sign in to view your cart</p>
+      <button class="back-shop" onclick="showView('auth')">Sign In</button>
+    </div>`;
+    return;
+  }
+  div.innerHTML = '<div class="loader">Loading cart…</div>';
+  try {
+    const data = await api('GET', '/api/cart');
+    renderCartItems(data.items);
+  } catch (e) {
+    div.innerHTML = '<div class="loader">Failed to load cart.</div>';
+  }
+}
+
+function renderCartItems(items) {
+  const div = document.getElementById('cartContent');
+  if (!items.length) {
+    div.innerHTML = `<div class="cart-empty">
+      <div class="empty-icon">🛒</div>
+      <p>Your cart is empty</p>
+      <button class="back-shop" onclick="showView('shop')">Browse Products</button>
+    </div>`;
+    return;
+  }
+  const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const shipping = subtotal >= 1000 ? 0 : 99;
+  const total = subtotal + shipping;
+
+  div.innerHTML = items.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-icon">${item.emoji}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">R${item.price.toLocaleString()} each</div>
+      </div>
+      <div class="cart-item-qty">
+        <button onclick="updateQty(${item.product_id}, ${item.quantity - 1})">−</button>
+        <span>${item.quantity}</span>
+        <button onclick="updateQty(${item.product_id}, ${item.quantity + 1})">+</button>
+      </div>
+      <div style="font-weight:700; min-width:70px; text-align:right">R${(item.price * item.quantity).toLocaleString()}</div>
+      <button class="remove-item" onclick="removeItem(${item.product_id})">×</button>
+    </div>
+  `).join('') + `
+  <div class="cart-total-box">
+    <div class="total-row"><span>Subtotal</span><span>R${subtotal.toLocaleString()}</span></div>
+    <div class="total-row"><span>Shipping</span><span>${shipping === 0 ? 'FREE' : 'R' + shipping}</span></div>
+    <div class="total-row grand"><span>Total</span><span>R${total.toLocaleString()}</span></div>
+    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout →</button>
+  </div>`;
+}
+
+async function updateQty(productId, newQty) {
+  try {
+    await api('PUT', `/api/cart/${productId}`, { quantity: newQty });
+    await refreshCartCount();
+    loadCart();
+  } catch (e) { toast(e.message); }
+}
+
+async function removeItem(productId) {
+  try {
+    await api('DELETE', `/api/cart/${productId}`);
+    toast('Item removed');
+    await refreshCartCount();
+    loadCart();
+  } catch (e) { toast(e.message); }
+}
+
+async function checkout() {
+  try {
+    const data = await api('POST', '/api/orders');
+    document.getElementById('successOrderNum').textContent = `Order #${data.order_id}`;
+    await refreshCartCount();
+    showView('success');
+  } catch (e) { toast(e.message); }
+}
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+function toggleAuthMode() {
+  isLogin = !isLogin;
+  document.getElementById('authTitle').textContent = isLogin ? 'Sign In' : 'Create Account';
+  document.getElementById('authSubtitle').textContent = isLogin ? 'Welcome back to ShopAlpha' : 'Join thousands of shoppers';
+  document.getElementById('nameGroup').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('authSubmit').textContent = isLogin ? 'Sign In' : 'Register';
+  document.getElementById('authToggle').textContent = isLogin ? "Don't have an account? Register" : 'Already have an account? Sign In';
+  document.getElementById('authMsg').innerHTML = '';
+}
+
+async function handleAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value;
+  const name = document.getElementById('authName').value.trim();
+  const msgDiv = document.getElementById('authMsg');
+  const btn = document.getElementById('authSubmit');
+
+  if (!email || !pass) { msgDiv.innerHTML = '<div class="msg error">Please fill in all fields.</div>'; return; }
+
+  btn.textContent = 'Please wait…';
+  btn.disabled = true;
+
+  try {
+    let data;
+    if (isLogin) {
+      data = await api('POST', '/api/auth/login', { email, password: pass });
+    } else {
+      if (!name) { msgDiv.innerHTML = '<div class="msg error">Please enter your name.</div>'; btn.textContent = 'Register'; btn.disabled = false; return; }
+      data = await api('POST', '/api/auth/register', { name, email, password: pass });
+    }
+    currentUser = data.user;
+    updateUserBar();
+    await refreshCartCount();
+    toast(`Welcome${isLogin ? ' back' : ''}, ${currentUser.name}! 👋`);
+    showView('shop');
+  } catch (e) {
+    msgDiv.innerHTML = `<div class="msg error">${e.message}</div>`;
+  } finally {
+    btn.textContent = isLogin ? 'Sign In' : 'Register';
+    btn.disabled = false;
+  }
+}
+
+async function logoutUser() {
+  try { await api('POST', '/api/auth/logout'); } catch {}
+  currentUser = null;
+  cartCount = 0;
+  document.getElementById('cartCount').textContent = 0;
+  updateUserBar();
+  toast('Signed out. See you soon!');
+  showView('shop');
+}
+
+// ── Orders ───────────────────────────────────────────────────────────────────
+async function loadOrders() {
+  const div = document.getElementById('ordersContent');
+  if (!currentUser) {
+    div.innerHTML = `<div class="orders-empty">Sign in to view your orders.</div>`;
+    return;
+  }
+  div.innerHTML = '<div class="loader">Loading orders…</div>';
+  try {
+    const data = await api('GET', '/api/orders');
+    if (!data.orders.length) {
+      div.innerHTML = `<div class="orders-empty">
+        <p style="font-size:48px;margin-bottom:16px">📦</p>
+        <p>No orders yet. Start shopping!</p>
+      </div>`;
+      return;
+    }
+    div.innerHTML = data.orders.map(order => `
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <div class="order-id">Order #${order.id}</div>
+            <div class="order-date">${new Date(order.created_at).toLocaleDateString('en-ZA', { year:'numeric', month:'long', day:'numeric' })}</div>
+          </div>
+          <span class="order-status">${order.status}</span>
+        </div>
+        <div class="order-items-list">
+          ${order.items.map(i => `${i.product_emoji} ${i.product_name} × ${i.quantity}`).join('<br>')}
+        </div>
+        <div class="order-total-line">Total: R${order.total.toLocaleString()}${order.shipping === 0 ? ' (Free shipping)' : ''}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    div.innerHTML = '<div class="loader">Failed to load orders.</div>';
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+async function init() {
+  // Check if already logged in
+  try {
+    const data = await api('GET', '/api/auth/me');
+    currentUser = data.user;
+    updateUserBar();
+    await refreshCartCount();
+  } catch {}
+  await loadProducts();
+}
+
+init();
+</script>
+</body>
+</html>
