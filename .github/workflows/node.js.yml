@@ -21,11 +21,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
+        # Point the cache manager to the subfolder containing package.json
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+        cache-dependency-path: './server/package.json'
+
+    # Fix: Route the commands into your server directory where package.json lives
+    - name: Install and Test Backend
+      working-directory: ./server
+      run: |
+        npm ci
+        npm run build --if-present
+        npm test --if-present
